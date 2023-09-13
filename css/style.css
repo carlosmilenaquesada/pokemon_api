@@ -1,9 +1,41 @@
-body{
+
+body {
     background-color: blueviolet
 }
+/*NAVEGADOR*/
+.nav {
+    display: flex;
+    align-items: center;
+    background-color: burlywood;
 
-.nav__img{
-    width: 20%;
+}
+.nav__img {
     background-color: red;
+    margin-left: 10px;
+
 }
 
+
+.nav__ul {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   background-color: aliceblue;
+   justify-content: space-evenly;
+}
+
+.nav__li{    
+    background-color: chartreuse;
+    padding: 0;
+    list-style: none;
+    margin: 5px;
+
+}
+
+.button__nav {
+    width: 100px;
+    height: 40px;
+    border-radius: 20px;
+}
+
+/*MAIN*/
