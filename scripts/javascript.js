@@ -1,24 +1,49 @@
 
+window.addEventListener('load', () => {
 
-const listaPokemon = document.querySelector("#listaPokemon");
-const botonesHeader = document.querySelectorAll(".button__nav");
-let URL = "http://pokeapi.co/api/v2/pokemon/";
+    const listaPokemon = document.getElementById('listaPokemon');
+    const tipoPokemon = document.getElementById('tipoPokemon');
+    const botonesHeader = document.querySelectorAll('.button__nav');
 
+    var detener = true;
 
+    let indice = 1;
 
-function mostrarPokemon(poke) {
+    let URL = "http://pokeapi.co/api/v2/pokemon/";
 
-    let tipos = poke.types.map(function (type) {
-        return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
+    botonesHeader.forEach(function (boton) {
+        boton.addEventListener("click", function () {
+            if (detener === true) {
+                detener = false;
+                listaPokemon.innerHTML = "";
+
+                const botonType = boton.id;
+
+                tipoPokemon.innerHTML = botonType;
+
+                buscarPokemon(botonType);
+            }
+        });
+
     });
 
-    tipos = tipos.join();
+    function mostrarPokemon(poke) {
 
-    let pokeId = String(poke.id).padStart(3, "0");
+        var cantidadMostrada = document.querySelectorAll('.pokemon').length;
 
-    const div = document.createElement("div");
-    div.classList.add("pokemon");
-    div.innerHTML = `<p class="pokemon-id-back">#${pokeId}</p>
+        if (cantidadMostrada <= 9) {
+
+            let tipos = poke.types.map(function (type) {
+                return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
+            });
+
+            tipos = tipos.join();
+
+            let pokeId = String(poke.id).padStart(3, "0");
+
+            const div = document.createElement("div");
+            div.classList.add("pokemon");
+            div.innerHTML = `<p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-imagen">
         <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}">
     </div>
@@ -35,29 +60,43 @@ function mostrarPokemon(poke) {
             <p class="stat">${poke.weight}</p>
         </div>
     </div>`;
-    listaPokemon.append(div);
-}
 
-botonesHeader.forEach(function (boton) {
-    boton.addEventListener("click", async function (event) {
-        const botonId = event.currentTarget.id;
 
-        listaPokemon.innerHTML = "";
+            listaPokemon.append(div);
+            console.log(cantidadMostrada);
+        }
+        
+        /*if (document.querySelectorAll('.pokemon').length < 10) {
+        }*/
 
-        for (let i = 1; i <= 151; i++) {
-           await fetch(URL + i).then(function (response) {
-                return response.json();
-            }).then(function (poke) {
-                if (botonId !== "all") {
-                    const tipos = poke.types.map(type => type.type.name);
-                    if (tipos.some(tipo => tipo.includes(botonId))) {
+
+    }
+
+
+
+
+    async function buscarPokemon(tipoPoke) {
+
+        for (let i = indice; i <= 1010 && detener === false; i++) {
+
+            await fetch(URL + i).then(function (response) {
+
+                response.json().then(function (poke) {
+                    if (tipoPoke === "all") {
                         mostrarPokemon(poke);
-                    }
-                } else {
-                    mostrarPokemon(poke);
-                }
+                    } else {
+                        const tipos = poke.types.map(type => type.type.name);
+                        if (tipos.some(tipo => tipo.includes(tipoPoke))) {
+                            mostrarPokemon(poke);
+                        }
 
+                    };
+                });
             });
         }
-    });
+
+        detener = true;
+
+
+    };
 });
