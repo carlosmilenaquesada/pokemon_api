@@ -5,33 +5,87 @@ window.addEventListener('load', () => {
     const tipoPokemon = document.getElementById('tipoPokemon');
     const botonesHeader = document.querySelectorAll('.button__nav');
 
-    var detener = true;
+    let url = "http://pokeapi.co/api/v2/";
 
-    let indice = 1;
 
-    let URL = "http://pokeapi.co/api/v2/pokemon/";
+    let tipoActual = "";
 
-    botonesHeader.forEach(function (boton) {
-        boton.addEventListener("click", function () {
-            if (detener === true) {
-                detener = false;
-                listaPokemon.innerHTML = "";
+    let usandose = false;
+    let cantidadMostrada = 0;
 
-                const botonType = boton.id;
+    let cantTotalPokemon = 0;
 
-                tipoPokemon.innerHTML = botonType;
+    fetch(url + "pokemon-species").then(function (response) {
+        return response.json();
+    }).then(async function (data) {
+        cantTotalPokemon = data.count;
+        buscarPokemon("all");
 
-                buscarPokemon(botonType);
-            }
+        botonesHeader.forEach(function (boton) {
+            boton.addEventListener("click", function () {
+
+                if (usandose === false) {
+                    usandose = true;
+                    const botonType = boton.id;
+
+                    tipoPokemon.innerHTML = botonType;
+                    tipoActual = botonType;
+                    listaPokemon.innerHTML = "";
+                    cantidadMostrada = 0;
+
+                    buscarPokemon(botonType);
+                }
+
+            });
         });
 
+
+
+    }).catch(function (error) {
+        console.log("ocurrió un error: " + error);
     });
+
+    async function buscarPokemon(tipoPoke) {
+
+
+
+        for (let i = 1; i <= cantTotalPokemon && cantidadMostrada <= 9; i++) {
+            const response = await fetch(url + "pokemon/" + i);
+
+            const data = await response.json();
+
+            determinarTipo(tipoPoke, data);
+
+
+        }
+
+        usandose = false;
+    };
+
+    function determinarTipo(tipoPoke, poke) {
+
+        if (tipoPoke === "all") {
+            mostrarPokemon(poke);
+        } else {
+            const listaTipos = poke.types.map(function (currentElement) {
+                return currentElement.type.name;
+            });
+
+            if (listaTipos.includes(tipoPoke)) {
+                mostrarPokemon(poke);
+            }
+        };
+
+    }
+
 
     function mostrarPokemon(poke) {
 
-        var cantidadMostrada = document.querySelectorAll('.pokemon').length;
+        console.log(poke);
 
-        if (cantidadMostrada <= 9) {
+        cantidadMostrada = document.querySelectorAll('.pokemon').length;
+
+        //if (cantidadMostrada <= 9) {
 
             let tipos = poke.types.map(function (type) {
                 return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
@@ -63,11 +117,10 @@ window.addEventListener('load', () => {
 
 
             listaPokemon.append(div);
-            console.log(cantidadMostrada);
-        }
-        
-        /*if (document.querySelectorAll('.pokemon').length < 10) {
-        }*/
+
+        //}
+
+
 
 
     }
@@ -75,28 +128,8 @@ window.addEventListener('load', () => {
 
 
 
-    async function buscarPokemon(tipoPoke) {
-
-        for (let i = indice; i <= 1010 && detener === false; i++) {
-
-            await fetch(URL + i).then(function (response) {
-
-                response.json().then(function (poke) {
-                    if (tipoPoke === "all") {
-                        mostrarPokemon(poke);
-                    } else {
-                        const tipos = poke.types.map(type => type.type.name);
-                        if (tipos.some(tipo => tipo.includes(tipoPoke))) {
-                            mostrarPokemon(poke);
-                        }
-
-                    };
-                });
-            });
-        }
-
-        detener = true;
 
 
-    };
+
+
 });
