@@ -19,6 +19,8 @@ window.addEventListener('load', () => {
 
     let cantTotalPokemon = 0;
 
+    let selectedFooterButton;
+
     fetch(url + "pokemon").then(function (response) {
         return response.json();
     }).then(async function (data) {
@@ -28,6 +30,9 @@ window.addEventListener('load', () => {
         generarFooter(cantTotalPokemon);
 
         botonesHeader.forEach(function (boton) {
+            let backgroundButtonColor = getComputedStyle(document.documentElement).getPropertyValue(`--${boton.id}-background-color`);
+            boton.style.backgroundColor = backgroundButtonColor;
+            boton.style.color = invertHexadecimalColor(backgroundButtonColor);
             boton.addEventListener("click", async function () {
 
                 if (usandose === false) {
@@ -37,9 +42,7 @@ window.addEventListener('load', () => {
                     tipoPokemon.innerHTML = botonType;
                     listaPokemon.innerHTML = "";
                     cantidadMostrada = 0;
-                    console.log(botonType);
                     let cantidadPokemon = await buscarPokemon(botonType);
-                    console.log(cantidadPokemon);
                     generarFooter(cantidadPokemon);
                 }
 
@@ -52,11 +55,37 @@ window.addEventListener('load', () => {
         console.log("ocurrió un error: " + error);
     });
 
+    function invertHexadecimalColor(hexaOriginal) {
+        let invertedColor = undefined;
+        if (typeof hexaOriginal === "string") {
+
+            hexaOriginal = hexaOriginal.charAt(0) === "#" ? hexaOriginal.substr(1, hexaOriginal.length - 1) : hexaOriginal;
+            if (hexaOriginal.length === 3 || hexaOriginal.length === 6) {
+
+
+                let filter = /^([0-9a-f]{3}){1,2}$/i;
+
+                if (filter.test(hexaOriginal)) {
+                    let hexaToArray = hexaOriginal.split("");
+                    let invertHexArray = hexaToArray.map(function (character) {
+                        character = parseInt("F", 16) - parseInt(character, 16);
+                        return character.toString(16);
+                    });
+
+
+                    invertedColor = "#" + invertHexArray.join('');
+                }
+            }
+        }
+        return invertedColor;
+    }
+
+
     function generarFooter(cantTotalElementos) {
         let cantdBotones = Math.ceil(cantTotalElementos / cantPorPagina);
         listaFooter.innerHTML = "";
 
-        for(let i = 1; i <= cantdBotones; i++){
+        for (let i = 1; i <= cantdBotones; i++) {
             let li = document.createElement('li');
             li.classList.add(`footer__li`);
             li.id = `footer-li-${i}`;
@@ -100,7 +129,7 @@ window.addEventListener('load', () => {
 
             }
             cantidadTotal = data.count;
-            
+
 
         } else {
             for (let i = 0; i < data.pokemon.length && cantidadMostrada < cantPorPagina; i++) {
@@ -115,11 +144,11 @@ window.addEventListener('load', () => {
             }
 
             cantidadTotal = data.pokemon.length;
-            
+
         }
 
-        
-        
+
+
         usandose = false;
         return cantidadTotal;
     };

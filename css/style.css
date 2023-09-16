@@ -1,41 +1,104 @@
+:root {
+    --all-background-color: #FFFFFF;
+    --normal-background-color: #A8A77A;
+    --fire-background-color: #EE8130;
+    --water-background-color: #6390F0;
+    --electric-background-color: #F7D02C;
+    --grass-background-color: #7AC74C;
+    --ice-background-color: #96D9D6;
+    --fighting-background-color: #C22E28;
+    --poison-background-color: #A33EA1;
+    --ground-background-color: #E2BF65;
+    --flying-background-color: #A98FF3;
+    --psychic-background-color: #F95587;
+    --bug-background-color: #A6B91A;
+    --rock-background-color: #B6A136;
+    --ghost-background-color: #735797;
+    --dragon-background-color: #6F35FC;
+    --dark-background-color: #705746;
+    --steel-background-color: #B7B7CE;
+    --fairy-background-color: #D685AD;
+}
+
 
 body {
-    background-color: blueviolet
+    
 }
-/*NAVEGADOR*/
+
+/*NAV-------------------------------------------------------------------------*/
 .nav {
+
     display: flex;
     align-items: center;
-    background-color: burlywood;
+    justify-content: space-evenly;
 
 }
+
 .nav__img {
-    background-color: red;
     margin-left: 10px;
+    width: 15%;
 
 }
 
 
 .nav__ul {
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   background-color: aliceblue;
-   justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: aliceblue;
+    justify-content: center;
+    width: 75%;
+    padding-inline: 0;
+    list-style-type: none;
+    margin-block: 0;
+    margin-inline: 0;
 }
 
-.nav__li{    
-    background-color: chartreuse;
+.nav__li {
+
     padding: 0;
-    list-style: none;
+    
     margin: 5px;
 
 }
 
 .button__nav {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
     width: 100px;
     height: 40px;
     border-radius: 20px;
+    padding: 0;
+}
+/*MAIN------------------------------------------------------------------------*/
+.pokemon{
+    background-color: #6390F0;
 }
 
-/*MAIN*/
+
+/*
+<p class="pokemon-id-back">#${pokeId}</p>
+    <div class="pokemon-imagen">
+        <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}">
+    </div>
+    <div class="pokemon-info">
+        <div class="nombre-contenedor">
+            <p class="pokemon-id">#${pokeId}</p>
+            <h2 class="pokemon-nombre">${poke.name}</h2>
+        </div>
+        <div class="pokemon-tipos">
+        ${tipos}
+        </div>
+        <div class="pokemon-stats">
+            <p class=stat">${poke.height}</p>
+            <p class="stat">${poke.weight}</p>
+        </div>
+    </div>`
+
+
+*/
+
+/*FOOTER----------------------------------------------------------------------*/
+.footer__li {
+    background-color: yellow;
+}
