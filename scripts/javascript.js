@@ -5,35 +5,42 @@ window.addEventListener('load', () => {
     const tipoPokemon = document.getElementById('tipoPokemon');
     const botonesHeader = document.querySelectorAll('.button__nav');
 
+    const listaFooter = document.getElementById('footer__ul');
+
+    const cantPorPagina = 20;
+
     let url = "http://pokeapi.co/api/v2/";
 
 
-    let tipoActual = "";
+    let botonType = "";
 
     let usandose = false;
     let cantidadMostrada = 0;
 
     let cantTotalPokemon = 0;
 
-    fetch(url + "pokemon-species").then(function (response) {
+    fetch(url + "pokemon").then(function (response) {
         return response.json();
     }).then(async function (data) {
         cantTotalPokemon = data.count;
         buscarPokemon("all");
 
+        generarFooter(cantTotalPokemon);
+
         botonesHeader.forEach(function (boton) {
-            boton.addEventListener("click", function () {
+            boton.addEventListener("click", async function () {
 
                 if (usandose === false) {
                     usandose = true;
-                    const botonType = boton.id;
+                    botonType = boton.id;
 
                     tipoPokemon.innerHTML = botonType;
-                    tipoActual = botonType;
                     listaPokemon.innerHTML = "";
                     cantidadMostrada = 0;
-
-                    buscarPokemon(botonType);
+                    console.log(botonType);
+                    let cantidadPokemon = await buscarPokemon(botonType);
+                    console.log(cantidadPokemon);
+                    generarFooter(cantidadPokemon);
                 }
 
             });
@@ -45,47 +52,85 @@ window.addEventListener('load', () => {
         console.log("ocurrió un error: " + error);
     });
 
+    function generarFooter(cantTotalElementos) {
+        let cantdBotones = Math.ceil(cantTotalElementos / cantPorPagina);
+        listaFooter.innerHTML = "";
+
+        for(let i = 1; i <= cantdBotones; i++){
+            let li = document.createElement('li');
+            li.classList.add(`footer__li`);
+            li.id = `footer-li-${i}`;
+            let button = document.createElement('button');
+            button.classList.add('footer_button');
+            button.id = `footer-button-${i}`;
+            button.innerHTML = i;
+            li.append(button);
+
+            listaFooter.append(li);
+        }
+
+
+
+    }
+
     async function buscarPokemon(tipoPoke) {
-
-
-
-        for (let i = 1; i <= cantTotalPokemon && cantidadMostrada <= 9; i++) {
-            const response = await fetch(url + "pokemon/" + i);
-
-            const data = await response.json();
-
-            determinarTipo(tipoPoke, data);
-
+        let urlTipo = url;
+        let cantidadTotal = 0;
+        if (tipoPoke === "all") {
+            urlTipo += "pokemon?limit=100000&offset=0";
+        } else {
+            urlTipo += "type/" + tipoPoke;
 
         }
 
-        usandose = false;
-    };
+        let response = await fetch(urlTipo);
+        let data = await response.json();
 
-    function determinarTipo(tipoPoke, poke) {
 
         if (tipoPoke === "all") {
-            mostrarPokemon(poke);
-        } else {
-            const listaTipos = poke.types.map(function (currentElement) {
-                return currentElement.type.name;
-            });
+            for (let i = 0; i < data.count && cantidadMostrada < cantPorPagina; i++) {
+                try {
+                    let responsePoke = await fetch(data.results[i].url);
 
-            if (listaTipos.includes(tipoPoke)) {
-                mostrarPokemon(poke);
+                    let dataPoke = await responsePoke.json();
+                    mostrarPokemon(dataPoke);
+                } catch (err) {
+                    console.log(err);
+                }
+
             }
-        };
+            cantidadTotal = data.count;
+            
 
-    }
+        } else {
+            for (let i = 0; i < data.pokemon.length && cantidadMostrada < cantPorPagina; i++) {
+                try {
+                    let responsePoke = await fetch(data.pokemon[i].pokemon.url);
+
+                    let dataPoke = await responsePoke.json();
+                    mostrarPokemon(dataPoke);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+
+            cantidadTotal = data.pokemon.length;
+            
+        }
+
+        
+        
+        usandose = false;
+        return cantidadTotal;
+    };
+
 
 
     function mostrarPokemon(poke) {
 
-        console.log(poke);
-
         cantidadMostrada = document.querySelectorAll('.pokemon').length;
 
-        //if (cantidadMostrada <= 9) {
+        if (cantidadMostrada < cantPorPagina) {
 
             let tipos = poke.types.map(function (type) {
                 return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
@@ -118,7 +163,7 @@ window.addEventListener('load', () => {
 
             listaPokemon.append(div);
 
-        //}
+        }
 
 
 
