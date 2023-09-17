@@ -21,10 +21,6 @@
 }
 
 
-body {
-    
-}
-
 /*NAV-------------------------------------------------------------------------*/
 .nav {
 
@@ -71,34 +67,109 @@ body {
     padding: 0;
 }
 /*MAIN------------------------------------------------------------------------*/
-.pokemon{
-    background-color: #6390F0;
+h1{
+    text-align: center;
+    text-transform: capitalize;
 }
 
-
-/*
-<p class="pokemon-id-back">#${pokeId}</p>
-    <div class="pokemon-imagen">
-        <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}">
-    </div>
-    <div class="pokemon-info">
-        <div class="nombre-contenedor">
-            <p class="pokemon-id">#${pokeId}</p>
-            <h2 class="pokemon-nombre">${poke.name}</h2>
-        </div>
-        <div class="pokemon-tipos">
-        ${tipos}
-        </div>
-        <div class="pokemon-stats">
-            <p class=stat">${poke.height}</p>
-            <p class="stat">${poke.weight}</p>
-        </div>
-    </div>`
-
-
-*/
+main{
+    font-family: Arial, Helvetica, sans-serif;
+}
+.pokemon-todos{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+/* Estilo para la clase .pokemon-id-back */
+.pokemon-id-back {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  /* Estilo para la clase .pokemon-imagen */
+  .pokemon-imagen {
+    text-align: center;
+  }
+  
+  /* Estilo para la clase .pokemon-imagen img */
+  .pokemon-imagen img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Estilo para la clase .pokemon-info */
+  .pokemon-info {
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    max-width: 300px; /* Ajusta el ancho máximo según tus necesidades */
+    height: 600px;
+  }
+  
+  /* Estilo para la clase .nombre-contenedor */
+  .nombre-contenedor {
+    text-align: center;
+  }
+  
+  /* Estilo para la clase .pokemon-id */
+  .pokemon-id {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  /* Estilo para la clase .pokemon-nombre */
+  .pokemon-nombre {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* Estilo para la clase .pokemon-tipos */
+  .pokemon-tipos {
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+  
+  /* Estilo para la clase .pokemon-stats */
+  .pokemon-stats {
+    text-align: center;
+  }
+  
+  /* Estilo para la clase .stat */
+  .stat {
+    margin-top: 10px;
+  }
+  
 
 /*FOOTER----------------------------------------------------------------------*/
+#footer__ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: aliceblue;
+    justify-content: center;
+    
+    padding-inline: 0;
+    list-style-type: none;
+    margin-block: 0;
+    margin-inline: 0;
+}
+
 .footer__li {
-    background-color: yellow;
+
+    padding: 0;
+    
+    margin: 5px;
+
+}
+
+.footer__button {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    width: 60px;
+    height: 40px;
+    padding: 0;
 }

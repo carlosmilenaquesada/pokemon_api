@@ -23,6 +23,7 @@ window.addEventListener('load', async function () {
     let cantidadTotal = await buscarPokemon("all");
     generarFooter(cantidadTotal);
     currentSelectedType = "all";
+    tipoPokemon.innerHTML = "all";
 
 
     botonesHeader.forEach(function (boton) {
@@ -84,7 +85,7 @@ window.addEventListener('load', async function () {
             li.classList.add(`footer__li`);
             li.id = `footer-li-${i}`;
             let button = document.createElement('button');
-            button.classList.add('footer_button');
+            button.classList.add('footer__button');
             button.id = `btn${i}`;
             button.innerHTML = i;
             button.style.backgroundColor = "white";
@@ -107,11 +108,10 @@ window.addEventListener('load', async function () {
                 boton.classList.add('selected-footer-button');
                 boton.style.backgroundColor = "red";
                 currentFooterButton = parseInt(boton.id.substr(3));
-                console.log(currentFooterButton);
                 buscarPokemon(currentSelectedType);
             });
         });
-   
+
     }
 
     async function buscarPokemon(tipoPoke) {
@@ -122,7 +122,6 @@ window.addEventListener('load', async function () {
         let offset = (currentFooterButton - 1) * cantPorPagina;
         if (tipoPoke === "all") {
             urlTipo += `pokemon?limit=${cantPorPagina}&offset=${offset}`;
-            console.log(urlTipo);
         } else {
             urlTipo += "type/" + tipoPoke;
 
@@ -131,17 +130,16 @@ window.addEventListener('load', async function () {
         let response = await fetch(urlTipo);
         let data = await response.json();
 
-        if(tipoPoke === "all"){
+        if (tipoPoke === "all") {
             cantidadTotal = data.count;
-        }else{
+        } else {
             cantidadTotal = data.pokemon.length;
         }
-        
+
 
         if (tipoPoke === "all") {
             for (let i = 0; i < data.results.length; i++) {
                 try {
-                    console.log("hola que hase " + data.results[i].url);
                     let responsePoke = await fetch(data.results[i].url);
 
                     let dataPoke = await responsePoke.json();
@@ -151,7 +149,7 @@ window.addEventListener('load', async function () {
                 }
 
             }
-            
+
 
 
         } else {
@@ -166,7 +164,7 @@ window.addEventListener('load', async function () {
                 }
             }
 
-            
+
 
         }
 
@@ -179,33 +177,42 @@ window.addEventListener('load', async function () {
 
 
     function mostrarPokemon(poke) {
-        let tipos = poke.types.map(function (type) {
-            return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
+        let tipos = poke.types.map(function (type, index) {
+            return `<p class="${type.type.name} tipo">Tipo ${index + 1}: ${type.type.name}</p>`;
         });
 
-        tipos = tipos.join();
+        if(tipos.length === 1){
+            tipos.push(`<p class="emptyType tipo">Tipo 2: no tiene</p>`);
+        }
+        tipos = tipos.join('');
 
         let pokeId = String(poke.id).padStart(3, "0");
 
         const div = document.createElement("div");
         div.classList.add("pokemon");
-        div.innerHTML = `<p class="pokemon-id-back">#${pokeId}</p>
-    <div class="pokemon-imagen">
-        <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}">
-    </div>
-    <div class="pokemon-info">
+        let defaultImage = poke.sprites.other["official-artwork"].front_default;
+        
+        console.log(typeof defaultImage);
+        if(defaultImage === null){
+            defaultImage = "../media/images/image-not-found.png";
+        }
+        
+        
+        
+        div.innerHTML = `<div class="pokemon-info">       
         <div class="nombre-contenedor">
-            <p class="pokemon-id">#${pokeId}</p>
-            <h2 class="pokemon-nombre">${poke.name}</h2>
+            <p class="pokemon-id">Número pokédex: #${pokeId}</p>
+            <h2 class="pokemon-nombre">Nombre: ${poke.name}</h2>
         </div>
-        <div class="pokemon-tipos">
-        ${tipos}
-        </div>
+        <div class="pokemon-imagen">
+        <img src="${defaultImage}" alt="${poke.name}">
+        </div> 
+        <div class="pokemon-tipos">${tipos}</div>
         <div class="pokemon-stats">
-            <p class=stat">${poke.height}</p>
-            <p class="stat">${poke.weight}</p>
+            <p class="stat">Altura: ${poke.height}</p>
+            <p class="stat">Peso: ${poke.weight}</p>
         </div>
-    </div>`;
+        </div>`;
 
 
         listaPokemon.append(div);
