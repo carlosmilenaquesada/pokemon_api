@@ -1,6 +1,5 @@
 
 window.addEventListener('load', async function() {
-    console.log("hola");
     const listaPokemon = document.getElementById('listaPokemon');
     const tipoPokemon = document.getElementById('tipoPokemon');
     const botonesHeader = document.querySelectorAll('.button__nav');
