@@ -1,9 +1,10 @@
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async function() {
 
     const listaPokemon = document.getElementById('listaPokemon');
     const tipoPokemon = document.getElementById('tipoPokemon');
     const botonesHeader = document.querySelectorAll('.button__nav');
+    let botonesFooter = new Array();
 
     const listaFooter = document.getElementById('footer__ul');
 
@@ -12,48 +13,40 @@ window.addEventListener('load', () => {
     let url = "http://pokeapi.co/api/v2/";
 
 
-    let botonType = "";
+    
 
     let usandose = false;
     let cantidadMostrada = 0;
 
-    let cantTotalPokemon = 0;
+    let currentFooterButton = 0;
 
-    let selectedFooterButton;
 
-    fetch(url + "pokemon").then(function (response) {
-        return response.json();
-    }).then(async function (data) {
-        cantTotalPokemon = data.count;
-        buscarPokemon("all");
 
-        generarFooter(cantTotalPokemon);
+    let cantPokemon = await buscarPokemon("all");
+    generarFooter(cantPokemon);
 
-        botonesHeader.forEach(function (boton) {
-            let backgroundButtonColor = getComputedStyle(document.documentElement).getPropertyValue(`--${boton.id}-background-color`);
-            boton.style.backgroundColor = backgroundButtonColor;
-            boton.style.color = invertHexadecimalColor(backgroundButtonColor);
-            boton.addEventListener("click", async function () {
+    botonesHeader.forEach(function (boton) {
+        let backgroundButtonColor = getComputedStyle(document.documentElement).getPropertyValue(`--${boton.id}-background-color`);
+        boton.style.backgroundColor = backgroundButtonColor;
+        boton.style.color = invertHexadecimalColor(backgroundButtonColor);
 
-                if (usandose === false) {
-                    usandose = true;
-                    botonType = boton.id;
+        boton.addEventListener("click", async function () {
 
-                    tipoPokemon.innerHTML = botonType;
-                    listaPokemon.innerHTML = "";
-                    cantidadMostrada = 0;
-                    let cantidadPokemon = await buscarPokemon(botonType);
-                    generarFooter(cantidadPokemon);
-                }
+            if (usandose === false) {
+                usandose = true;
+                let botonType = boton.id;
 
-            });
+                tipoPokemon.innerHTML = botonType;
+                listaPokemon.innerHTML = "";
+                cantidadMostrada = 0;
+                let cantidadPokemon = await buscarPokemon(botonType);
+                generarFooter(cantidadPokemon);
+            }
+
         });
-
-
-
-    }).catch(function (error) {
-        console.log("ocurrió un error: " + error);
     });
+
+
 
     function invertHexadecimalColor(hexaOriginal) {
         let invertedColor = undefined;
@@ -84,27 +77,45 @@ window.addEventListener('load', () => {
     function generarFooter(cantTotalElementos) {
         let cantdBotones = Math.ceil(cantTotalElementos / cantPorPagina);
         listaFooter.innerHTML = "";
-
+        botonesFooter = [];
         for (let i = 1; i <= cantdBotones; i++) {
             let li = document.createElement('li');
             li.classList.add(`footer__li`);
             li.id = `footer-li-${i}`;
             let button = document.createElement('button');
             button.classList.add('footer_button');
-            button.id = `footer-button-${i}`;
+            button.id = `btn${i}`;
             button.innerHTML = i;
+            button.style.backgroundColor = "white";
+            
+            botonesFooter.push(button);
             li.append(button);
-
             listaFooter.append(li);
         }
 
-
-
+        botonesFooter[0].classList.add('selected-footer-button');
+        botonesFooter[0].style.backgroundColor = "red";
+        currentFooterButton = 1;
+        
     }
+
+    botonesFooter.forEach(function(boton){        
+        boton.addEventListener("click", function(){
+            botonesFooter.forEach(function(boton){
+                boton.classList.remove('selected-footer-button');
+                boton.style.backgroundColor = "white";
+            });
+            boton.classList.add('selected-footer-button');
+            boton.style.backgroundColor = "red";
+            currentFooterButton = parseInt(boton.id.substr(3));
+        });
+    }); 
+    
 
     async function buscarPokemon(tipoPoke) {
         let urlTipo = url;
         let cantidadTotal = 0;
+
         if (tipoPoke === "all") {
             urlTipo += "pokemon?limit=100000&offset=0";
         } else {
@@ -158,7 +169,6 @@ window.addEventListener('load', () => {
     function mostrarPokemon(poke) {
 
         cantidadMostrada = document.querySelectorAll('.pokemon').length;
-
         if (cantidadMostrada < cantPorPagina) {
 
             let tipos = poke.types.map(function (type) {
