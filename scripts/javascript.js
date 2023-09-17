@@ -39,6 +39,7 @@ window.addEventListener('load', async function () {
 
                 tipoPokemon.innerHTML = botonType;
                 listaPokemon.innerHTML = "";
+                currentFooterButton = 1;
                 cantidadTotal = await buscarPokemon(botonType);
 
                 generarFooter(cantidadTotal);
@@ -97,7 +98,7 @@ window.addEventListener('load', async function () {
 
         botonesFooter[0].classList.add('selected-footer-button');
         botonesFooter[0].style.backgroundColor = "red";
-        currentFooterButton = 1;
+        
 
         botonesFooter.forEach(function (boton) {
             boton.addEventListener("click", function () {
@@ -115,10 +116,11 @@ window.addEventListener('load', async function () {
     }
 
     async function buscarPokemon(tipoPoke) {
+        
         listaPokemon.innerHTML = "";
         let urlTipo = url;
         let cantidadTotal = 0;
-
+        console.log(currentFooterButton);
         let offset = (currentFooterButton - 1) * cantPorPagina;
         if (tipoPoke === "all") {
             urlTipo += `pokemon?limit=${cantPorPagina}&offset=${offset}`;
@@ -132,10 +134,10 @@ window.addEventListener('load', async function () {
 
         if (tipoPoke === "all") {
             cantidadTotal = data.count;
+            
         } else {
             cantidadTotal = data.pokemon.length;
         }
-
 
         if (tipoPoke === "all") {
             for (let i = 0; i < data.results.length; i++) {
@@ -153,12 +155,15 @@ window.addEventListener('load', async function () {
 
 
         } else {
-            for (let i = offset; i < data.pokemon.length && i < offset + cantPorPagina; i++) {
+            console.log({offset}, {cantidadTotal}, {cantPorPagina});
+            for (let i = offset; i < cantidadTotal && i < offset + cantPorPagina; i++) {
+                
                 try {
                     let responsePoke = await fetch(data.pokemon[i].pokemon.url);
 
                     let dataPoke = await responsePoke.json();
                     mostrarPokemon(dataPoke);
+                    
                 } catch (err) {
                     console.log(err);
                 }
@@ -191,10 +196,8 @@ window.addEventListener('load', async function () {
         const div = document.createElement("div");
         div.classList.add("pokemon");
         let defaultImage = poke.sprites.other["official-artwork"].front_default;
-        
-        console.log(typeof defaultImage);
         if(defaultImage === null){
-            defaultImage = "../media/images/image-not-found.png";
+            defaultImage = "media/images/image-not-found.png";
         }
         
         
