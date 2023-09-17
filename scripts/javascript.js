@@ -1,5 +1,5 @@
 
-window.addEventListener('load', async function() {
+window.addEventListener('load', async function () {
     const listaPokemon = document.getElementById('listaPokemon');
     const tipoPokemon = document.getElementById('tipoPokemon');
     const botonesHeader = document.querySelectorAll('.button__nav');
@@ -12,17 +12,18 @@ window.addEventListener('load', async function() {
     let url = "http://pokeapi.co/api/v2/";
 
 
-    
+
 
     let usandose = false;
-    let cantidadMostrada = 0;
 
-    let currentFooterButton = 0;
+    let currentFooterButton = 1;
 
+    let currentSelectedType = "";
 
+    let cantidadTotal = await buscarPokemon("all");
+    generarFooter(cantidadTotal);
+    currentSelectedType = "all";
 
-    let cantPokemon = await buscarPokemon("all");
-    generarFooter(cantPokemon);
 
     botonesHeader.forEach(function (boton) {
         let backgroundButtonColor = getComputedStyle(document.documentElement).getPropertyValue(`--${boton.id}-background-color`);
@@ -37,9 +38,10 @@ window.addEventListener('load', async function() {
 
                 tipoPokemon.innerHTML = botonType;
                 listaPokemon.innerHTML = "";
-                cantidadMostrada = 0;
-                let cantidadPokemon = await buscarPokemon(botonType);
-                generarFooter(cantidadPokemon);
+                cantidadTotal = await buscarPokemon(botonType);
+
+                generarFooter(cantidadTotal);
+                currentSelectedType = botonType;
             }
 
         });
@@ -86,7 +88,7 @@ window.addEventListener('load', async function() {
             button.id = `btn${i}`;
             button.innerHTML = i;
             button.style.backgroundColor = "white";
-            
+
             botonesFooter.push(button);
             li.append(button);
             listaFooter.append(li);
@@ -95,28 +97,32 @@ window.addEventListener('load', async function() {
         botonesFooter[0].classList.add('selected-footer-button');
         botonesFooter[0].style.backgroundColor = "red";
         currentFooterButton = 1;
-        
+
+        botonesFooter.forEach(function (boton) {
+            boton.addEventListener("click", function () {
+                botonesFooter.forEach(function (boton) {
+                    boton.classList.remove('selected-footer-button');
+                    boton.style.backgroundColor = "white";
+                });
+                boton.classList.add('selected-footer-button');
+                boton.style.backgroundColor = "red";
+                currentFooterButton = parseInt(boton.id.substr(3));
+                console.log(currentFooterButton);
+                buscarPokemon(currentSelectedType);
+            });
+        });
+   
     }
 
-    botonesFooter.forEach(function(boton){        
-        boton.addEventListener("click", function(){
-            botonesFooter.forEach(function(boton){
-                boton.classList.remove('selected-footer-button');
-                boton.style.backgroundColor = "white";
-            });
-            boton.classList.add('selected-footer-button');
-            boton.style.backgroundColor = "red";
-            currentFooterButton = parseInt(boton.id.substr(3));
-        });
-    }); 
-    
-
     async function buscarPokemon(tipoPoke) {
+        listaPokemon.innerHTML = "";
         let urlTipo = url;
         let cantidadTotal = 0;
 
+        let offset = (currentFooterButton - 1) * cantPorPagina;
         if (tipoPoke === "all") {
-            urlTipo += "pokemon?limit=100000&offset=0";
+            urlTipo += `pokemon?limit=${cantPorPagina}&offset=${offset}`;
+            console.log(urlTipo);
         } else {
             urlTipo += "type/" + tipoPoke;
 
@@ -125,10 +131,17 @@ window.addEventListener('load', async function() {
         let response = await fetch(urlTipo);
         let data = await response.json();
 
+        if(tipoPoke === "all"){
+            cantidadTotal = data.count;
+        }else{
+            cantidadTotal = data.pokemon.length;
+        }
+        
 
         if (tipoPoke === "all") {
-            for (let i = 0; i < data.count && cantidadMostrada < cantPorPagina; i++) {
+            for (let i = 0; i < data.results.length; i++) {
                 try {
+                    console.log("hola que hase " + data.results[i].url);
                     let responsePoke = await fetch(data.results[i].url);
 
                     let dataPoke = await responsePoke.json();
@@ -138,11 +151,11 @@ window.addEventListener('load', async function() {
                 }
 
             }
-            cantidadTotal = data.count;
+            
 
 
         } else {
-            for (let i = 0; i < data.pokemon.length && cantidadMostrada < cantPorPagina; i++) {
+            for (let i = offset; i < data.pokemon.length && i < offset + cantPorPagina; i++) {
                 try {
                     let responsePoke = await fetch(data.pokemon[i].pokemon.url);
 
@@ -153,7 +166,7 @@ window.addEventListener('load', async function() {
                 }
             }
 
-            cantidadTotal = data.pokemon.length;
+            
 
         }
 
@@ -166,21 +179,17 @@ window.addEventListener('load', async function() {
 
 
     function mostrarPokemon(poke) {
+        let tipos = poke.types.map(function (type) {
+            return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
+        });
 
-        cantidadMostrada = document.querySelectorAll('.pokemon').length;
-        if (cantidadMostrada < cantPorPagina) {
+        tipos = tipos.join();
 
-            let tipos = poke.types.map(function (type) {
-                return `<p class="${type.type.name} tipo">${type.type.name}</p>`;
-            });
+        let pokeId = String(poke.id).padStart(3, "0");
 
-            tipos = tipos.join();
-
-            let pokeId = String(poke.id).padStart(3, "0");
-
-            const div = document.createElement("div");
-            div.classList.add("pokemon");
-            div.innerHTML = `<p class="pokemon-id-back">#${pokeId}</p>
+        const div = document.createElement("div");
+        div.classList.add("pokemon");
+        div.innerHTML = `<p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-imagen">
         <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}">
     </div>
@@ -199,9 +208,9 @@ window.addEventListener('load', async function() {
     </div>`;
 
 
-            listaPokemon.append(div);
+        listaPokemon.append(div);
 
-        }
+
 
 
 
