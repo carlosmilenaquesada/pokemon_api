@@ -1,6 +1,19 @@
 
 window.addEventListener('load', async function() {
 
+    const listaPokemon = document.getElementById('listaPokemon');
+    const tipoPokemon = document.getElementById('tipoPokemon');
+    const botonesHeader = document.querySelectorAll('.button__nav');
+    let botonesFooter = new Array();
+
+    const listaFooter = document.getElementById('footer__ul');
+
+    const cantPorPagina = 20;
+
+    let url = "http://pokeapi.co/api/v2/";
+
+
+    
 
     let usandose = false;
     let cantidadMostrada = 0;
